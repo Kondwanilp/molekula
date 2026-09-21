@@ -5,20 +5,44 @@ import { useState } from "react";
 export default function Home() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [backendMessage, setBackendMessage] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0] ?? null;
+
     setSelectedFile(file);
+    setBackendMessage("");
   }
 
-  async function testBackendConnection() {
+  async function uploadCourseMaterial() {
+    if (!selectedFile) {
+      setBackendMessage("Please select course material first.");
+      return;
+    }
+
+    setIsUploading(true);
+    setBackendMessage("");
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/test");
+      const response = await fetch("http://127.0.0.1:8000/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Upload failed.");
+      }
+
       const data = await response.json();
 
       setBackendMessage(data.message);
     } catch (error) {
-      setBackendMessage("Could not connect to the MoleKula backend.");
+      setBackendMessage("Could not upload the course material.");
+    } finally {
+      setIsUploading(false);
     }
   }
 
@@ -65,10 +89,11 @@ export default function Home() {
             </label>
 
             <button
-              onClick={testBackendConnection}
-              className="rounded-full border border-slate-700 px-7 py-3 font-semibold text-white transition hover:bg-slate-800"
+              onClick={uploadCourseMaterial}
+              disabled={isUploading}
+              className="rounded-full border border-slate-700 px-7 py-3 font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Ask MoleKula
+              {isUploading ? "Uploading..." : "Ask MoleKula"}
             </button>
           </div>
 
@@ -85,7 +110,7 @@ export default function Home() {
             </div>
           )}
 
-          {/* Backend connection message */}
+          {/* Backend message */}
           {backendMessage && (
             <div className="mt-6 rounded-lg border border-cyan-400/20 bg-cyan-400/10 px-5 py-3">
               <p className="text-sm text-cyan-300">{backendMessage}</p>

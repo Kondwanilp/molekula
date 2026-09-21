@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -21,3 +21,12 @@ def home():
 @app.get("/api/test")
 def test_connection():
     return {"message": "Frontend and backend are connected!"}
+
+
+@app.post("/api/upload")
+async def upload_course_material(file: UploadFile = File(...)):
+    return {
+        "filename": file.filename,
+        "content_type": file.content_type,
+        "message": "Course material received!"
+    }
