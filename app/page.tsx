@@ -1,8 +1,18 @@
+"use client";
+
+import { useState } from "react";
+
 export default function Home() {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0] ?? null;
+    setSelectedFile(file);
+  }
+
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-6 py-8">
-        
         {/* Navigation */}
         <nav className="flex items-center justify-between">
           <div className="text-2xl font-bold tracking-tight">
@@ -30,16 +40,33 @@ export default function Home() {
             structures, reactions, and reliable scientific sources.
           </p>
 
-          {/* Buttons */}
-          <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-            <button className="rounded-full bg-cyan-400 px-7 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300">
+          {/* Upload section */}
+          <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">
+            <label className="cursor-pointer rounded-full bg-cyan-400 px-7 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300">
               Upload Course Material
-            </button>
+              <input
+                type="file"
+                accept=".pdf,.doc,.docx,.txt"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+            </label>
 
             <button className="rounded-full border border-slate-700 px-7 py-3 font-semibold text-white transition hover:bg-slate-800">
               Ask MoleKula
             </button>
           </div>
+
+          {/* Selected file */}
+          {selectedFile && (
+            <div className="mt-6 rounded-lg border border-slate-800 bg-slate-900 px-5 py-3">
+              <p className="text-sm text-slate-400">Selected course material:</p>
+
+              <p className="mt-1 font-medium text-cyan-300">
+                {selectedFile.name}
+              </p>
+            </div>
+          )}
 
           {/* Tagline */}
           <div className="mt-16 text-sm font-medium tracking-[0.25em] text-slate-500">
