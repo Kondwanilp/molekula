@@ -24,3 +24,9 @@ build/
 # OS files
 .DS_Store
 Thumbs.db
+# Course materials
+*.pdf
+
+# Python
+__pycache__/
+*.pyc

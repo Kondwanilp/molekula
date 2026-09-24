@@ -37,5 +37,8 @@ async def upload_course_material(file: UploadFile = File(...)):
         "filename": file.filename,
         "content_type": file.content_type,
         "message": "Course material received and read!",
-        "text_preview": extracted_text[:2],
+        "text_preview": extracted_text["pages"][:3],
+        "total_pages": extracted_text["total_pages"],
+        "pages_with_text": extracted_text["pages_with_text"],
+        "pages_without_text": extracted_text["pages_without_text"],
     }
