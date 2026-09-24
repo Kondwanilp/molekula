@@ -1,3 +1,4 @@
+from pdf_reader import extract_text_from_pdf
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -25,8 +26,16 @@ def test_connection():
 
 @app.post("/api/upload")
 async def upload_course_material(file: UploadFile = File(...)):
+    file_contents = await file.read()
+
+    with open(file.filename, "wb") as saved_file:
+        saved_file.write(file_contents)
+
+    extracted_text = extract_text_from_pdf(file.filename)
+
     return {
         "filename": file.filename,
         "content_type": file.content_type,
-        "message": "Course material received!"
+        "message": "Course material received and read!",
+        "text_preview": extracted_text[:1000],
     }
